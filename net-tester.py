@@ -3,11 +3,12 @@ import time
 import socket
 
 rede = 'nome-da-sua-rede' #nome da rede da sua internet
-tempo = 6 #tempo de espera para realizar novo teste (em minutos)
-tempo *= 60 #o comando "time.sleep" recebe o parâmetro de tempo em segundos, por isso é necessário converter para minutos
+tempo = 0.084 #tempo de espera para realizar novo teste (em minutos)
+contador = 0 # contador para quantas vezes a internet foi reconectada
 
 #faz um letreiro estiloso para o programa 
-def exibir_letreiro():
+def exibir_interface():
+    os.system('cls')
     print("""
 ███╗   ██╗███████╗████████╗     ████████╗███████╗███████╗████████╗███████╗██████╗ 
 ████╗  ██║██╔════╝╚══██╔══╝     ╚══██╔══╝██╔════╝██╔════╝╚══██╔══╝██╔════╝██╔══██╗
@@ -16,6 +17,9 @@ def exibir_letreiro():
 ██║ ╚████║███████╗   ██║           ██║   ███████╗███████║   ██║   ███████╗██║  ██║
 ╚═╝  ╚═══╝╚══════╝   ╚═╝           ╚═╝   ╚══════╝╚══════╝   ╚═╝   ╚══════╝╚═╝  ╚═╝
 """)
+    print('----------------------------------------------------------------------------------')
+    print('conexão estável')
+    print(f'Reconexões feitas até o momento: {contador} \n')
 #função para verificar se o computador está conectado à internet
 def esta_conectado():
     try:
@@ -25,7 +29,7 @@ def esta_conectado():
         return False 
 
 #loop que desconecta, e conecta de novo o computador com a internet a cada 10 segundos, para que a conexão volte
-def testar_conexao(rede):
+def reconectar(rede):
     while True:
         print('desconectando rede...')
         os.system('netsh wlan disconnect')
@@ -34,7 +38,9 @@ def testar_conexao(rede):
         os.system(f'netsh wlan connect name="{rede}"')
         time.sleep(10)
         
+        global contador
         if esta_conectado():
+            contador += 1
             break
         else:
             continue
@@ -42,10 +48,9 @@ def testar_conexao(rede):
 #programa principal
 while True:
     if esta_conectado():
-        os.system('cls')
-        exibir_letreiro()
-        print('conexão estável')
+        exibir_interface()
     else:
         print('conexão perdida, iniciando procedimentos...')
-        testar_conexao(rede)
-    time.sleep(tempo)
+        reconectar(rede)
+        exibir_interface()
+    time.sleep(tempo * 60)
