@@ -3,10 +3,10 @@ import time
 import socket
 
 rede = 'nome-da-sua-rede' #nome da rede da sua internet
-tempo = 0.084 #tempo de espera para realizar novo teste (em minutos)
+tempo = 2 #tempo de espera para realizar novo teste (em minutos)
 contador = 0 # contador para quantas vezes a internet foi reconectada
 
-#faz um letreiro estiloso para o programa 
+#exibe a interface principal do programa
 def exibir_interface():
     os.system('cls')
     print("""
@@ -20,6 +20,7 @@ def exibir_interface():
     print('----------------------------------------------------------------------------------')
     print('conexão estável')
     print(f'Reconexões feitas até o momento: {contador} \n')
+
 #função para verificar se o computador está conectado à internet
 def esta_conectado():
     try:
@@ -30,6 +31,7 @@ def esta_conectado():
 
 #loop que desconecta, e conecta de novo o computador com a internet a cada 10 segundos, para que a conexão volte
 def reconectar(rede):
+    global contador
     while True:
         print('desconectando rede...')
         os.system('netsh wlan disconnect')
@@ -37,20 +39,17 @@ def reconectar(rede):
         print('conectando rede...')
         os.system(f'netsh wlan connect name="{rede}"')
         time.sleep(10)
-        
-        global contador
+
         if esta_conectado():
             contador += 1
             break
         else:
             continue
 
-#programa principal
+#loop principal
 while True:
-    if esta_conectado():
-        exibir_interface()
-    else:
+    if not esta_conectado():
         print('conexão perdida, iniciando procedimentos...')
         reconectar(rede)
-        exibir_interface()
+    exibir_interface()
     time.sleep(tempo * 60)
